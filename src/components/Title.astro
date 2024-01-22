@@ -1,0 +1,14 @@
+---
+const {title} = Astro.props;
+---
+
+<div class="mt-[40px] mb-[16px] flex items-center gap-[12px]">
+    <div class=`${Astro.props.class} w-[16px] h-[32px] rounded-full`></div>
+    <h2 class="font-semibold">{title}</h2>
+</div>
+
+<style>
+    h2 {
+        font-family: 'Outfit Variable', sans-serif;
+    }
+</style>

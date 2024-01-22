@@ -3,6 +3,9 @@ import Layout from '../../layouts/Layout.astro'
 import LogoWhite from "../../components/Icons/LogoWhite.astro";
 import ExpandLeft from "../../components/Icons/ExpandLeft.astro";
 
+import Tag from '../../components/Tag.astro';
+import Title from "../../components/Title.astro";
+
 const { id } = Astro.params;
 
 const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`);
@@ -11,6 +14,19 @@ const meal = data.meals[0];
 
 const instructions = meal.strInstructions;
 const paragraphs = instructions.split('\r\n');
+
+const ingredients = [];
+for (let i = 1; i <= 20; i++) {
+    const ingredientKey = `strIngredient${i}`;
+    const measureKey = `strMeasure${i}`;
+    
+    const ingredient = meal[ingredientKey].trim();
+    const measure = meal[measureKey].trim();
+
+    if (ingredient && measure) {
+      ingredients.push(`${measure} ${ingredient}`);
+    }
+}
 ---
 
 <Layout title={meal.strMeal}>
@@ -22,25 +38,33 @@ const paragraphs = instructions.split('\r\n');
         </a>
     </nav>
     <main>
-        <h1>{meal.strMeal}</h1>
-        <h2>Ingredients</h2>
+        <img src={meal.strMealThumb} alt={meal.strMeal} class="h-[400px] w-full object-cover rounded-md mb-[32px]">
+        <h1 class="text-[40px] font-semibold mb-[20px]">{meal.strMeal}</h1>
+        <ul class="flex gap-[12px]">
+            <Tag category="category" value={meal.strCategory}/>
+            <Tag category="area" value={meal.strArea}/>
+        </ul>
+        <Title class="bg-[#FEBD2E]" title="Ingredients"/>
+        <ul class="flex flex-col gap-[12px] font-light list-disc ml-6">
+            {
+                ingredients.map((ingredient) => (
+                    <li>{ingredient}</li>
+                ))
+            }
 
-        <h2>Instructions</h2>
+        </ul>
+
+        <Title class="bg-[#4E80EE]" title="Instructions"/>
+        
         {
             paragraphs.map((paragraph) => (
-                <p>{paragraph}</p>
+                <p class="font-light">{paragraph}</p>
             ))
         }
-
     </main>
 </Layout>
 
 <style>
-
-    h2 {
-        font-family: 'Outfit Variable', sans-serif;
-    }
-
     p {
         margin-bottom: 16px;
     }
@@ -57,5 +81,26 @@ const paragraphs = instructions.split('\r\n');
     main {
         max-width: 616px;
         margin: 0 auto;
+        margin-bottom: 96px;
+    }
+
+    @media screen and (width <= 1024px) {
+        nav {
+            max-width: 768px;
+        }
+        
+    }
+
+    @media screen and (width <= 768px) {
+        nav {
+            max-width: 616px;
+            padding: 0px 20px;
+        }
+
+        main {
+            padding: 0px 20px;
+
+        }
+        
     }
 </style>
